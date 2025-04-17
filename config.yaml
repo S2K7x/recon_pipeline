@@ -1,0 +1,58 @@
+# Default Configuration for Recon Pipeline V5 (DNS, JS, Params)
+
+paths:
+  subfinder: null
+  httpx: null
+  ffuf: null
+  gau: null
+  nuclei: null
+  dnsx: null       # <-- ADDED
+  subjs: null      # <-- ADDED
+  paramspider: null # <-- ADDED
+  wordlist: common_dirs.txt
+  output_base_dir: recon_results
+
+settings:
+  user_agent: "PythonReconPipeline/5.0" # <-- Version bump
+  default_ports: "80,443,8080,8443"
+  default_check_paths: ["/", "/api"]
+  default_threads: 10 # General concurrency for FFUF etc.
+
+tool_options:
+  subfinder:
+    enabled: true
+    extra_flags: "-passive"
+  dnsx: # <-- ADDED Section
+    enabled: true
+    threads: 50 # dnsx is fast
+    extra_flags: "-resp -a -aaaa" # Get IPs (A/AAAA) in format domain,ip
+  httpx:
+    enabled: true
+    timeout: 10
+    extra_flags: "-title -tech-detect"
+  subjs: # <-- ADDED Section
+    enabled: true
+    concurrency: 20
+    extra_flags: "" # e.g., -t 5 (timeout)
+  ffuf:
+    enabled: true
+    threads: 20
+    rate: 0
+    match_codes: "200,204,301,302,307,403"
+    filter_size: "0"
+    extra_flags: ""
+  gau:
+    enabled: true
+    threads: 5
+    extra_flags: "--subs --providers wayback,commoncrawl,otx"
+  paramspider: # <-- ADDED Section
+    enabled: true
+    # Output dir will be relative to target results dir
+    extra_flags: "--exclude woff,css,js,png,svg,jpg,ttf,otf" # Exclude common static files
+  nuclei:
+    enabled: true
+    templates: ""
+    severity: "high,critical"
+    concurrency: 10
+    rate_limit: 150
+    extra_flags: ""
