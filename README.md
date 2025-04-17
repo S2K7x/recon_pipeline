@@ -43,7 +43,7 @@ The pipeline is designed to be modular and configurable, allowing users to enabl
 1.  **Clone the repository (or place the script):**
     ```bash
     # If this were a git repo:
-    # git clone (https://github.com/S2K7x/recon_pipeline)
+    # git clone https://github.com/S2K7x/recon_pipeline
     # cd recon_pipeline
     # Otherwise, just ensure recon_pipeline.py is present.
     ```
@@ -74,3 +74,49 @@ Configuration values can be overridden by command-line arguments.
 ./recon_pipeline.py [options] <domain> ##
 # or
 ./recon_pipeline.py [options] -l <domain_list_file> ##
+```
+
+**Examples:**
+
+* **Run against a single domain using default config:**
+    ```bash
+    ./recon_pipeline.py example.com ##
+    ```
+* **Run against a list of domains from a file:**
+    ```bash
+    ./recon_pipeline.py -l targets.txt ##
+    ```
+* **Specify a custom config file and increase verbosity:**
+    ```bash
+    ./recon_pipeline.py -c custom_config.yaml -v example.com ##
+    ```
+* **Skip subdomain enumeration and Nuclei scanning:**
+    ```bash
+    ./recon_pipeline.py --skip-subfinder --skip-nuclei example.com ##
+    ```
+* **Override ffuf threads and Nuclei severity:**
+    ```bash
+    ./recon_pipeline.py --ffuf-threads 40 --nuclei-severity medium,high example.com ##
+    ```
+* **Append extra flags to httpx:**
+    ```bash
+    ./recon_pipeline.py --httpx-flags "-status-code -content-length" example.com ##
+    ```
+
+**Command-line Arguments:**
+
+Run `./recon_pipeline.py --help` to see the full list of available arguments, including options to override most configuration settings and skip specific tools.
+
+## Output
+
+Results are saved in the directory specified by `output_base_dir` in the configuration (default: `recon_results`). Inside this directory, a sub-directory is created for each target domain.
+
+Within a target's directory, you can find:
+
+* `known_subdomains.txt`: A list of all subdomains found across all runs for this target.
+* `new_findings_YYYYMMDD_HHMMSS.log`: A log of *new* discoveries (subdomains, directories, JS URLs, Nuclei findings) from the latest run.
+* `nuclei_findings_YYYYMMDD_HHMMSS.jsonl`: Raw JSONL output from the Nuclei scanner.
+* `paramspider_output_YYYYMMDD_HHMMSS/`: Directory containing results from ParamSpider.
+* `known_dirs_<host>.txt`: State files for directory fuzzing results per host.
+
+Standard output will show progress, discovered items (marked with `[+]`), and potential vulnerabilities found by Nuclei (marked with `[! ]`).
